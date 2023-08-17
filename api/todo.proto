@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+option go_package = "github.com/carlosalg/todo-grpc-go";
+
+message Todo {
+  int32 id = 1;
+  string title = 2;
+  bool completed = 3;
+}
+
+service TodoService {
+  rpc CreateTodo (Todo) returns (Todo);
+  rpc GetTodoList (google.protobuf.Empty) returns (stream Todo);
+}
