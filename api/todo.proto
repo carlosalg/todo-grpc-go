@@ -8,6 +8,7 @@ message Todo {
   string title = 2;
   bool completed = 3;
 }
+
 message DeleteTodoRequest {
   int32 id = 1;
 }
@@ -15,8 +16,17 @@ message DeleteTodoResponse {
   bool success = 1;
 }
 
+message UpdateTodoRequest {
+  int32 id = 1;
+  bool completed = 2;
+}
+message UpdateTodoResponse {
+  bool success = 1;
+}
+
 service TodoService {
   rpc CreateTodo (Todo) returns (Todo);
   rpc GetTodoList (google.protobuf.Empty) returns (stream Todo);
   rpc DeleteTodo (DeleteTodoRequest) returns (DeleteTodoResponse);
+  rpc UpdateTodo (UpdateTodoRequest) returns (UpdateTodoResponse);
 }

@@ -46,6 +46,18 @@ func (s *todoServer) DeleteTodo(ctx context.Context, req *pb.DeleteTodoRequest) 
 	return &pb.DeleteTodoResponse{Success: false}, nil
 }
 
+func (s *todoServer) UpdateTodo(ctx context.Context, req *pb.UpdateTodoRequest) (*pb.UpdateTodoResponse, error) {
+	log.Printf("Received UpdateTodo request: ID %d, Completed %t", req.Id, req.Completed)
+	for _, todo := range s.todos {
+		if todo.Id == req.Id {
+			todo.Completed = req.Completed
+			return &pb.UpdateTodoResponse{Success: true}, nil
+		}
+	}
+	log.Printf("Todo list after update: %v", s.todos)
+	return &pb.UpdateTodoResponse{Success: false}, nil
+}
+
 func main() {
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))

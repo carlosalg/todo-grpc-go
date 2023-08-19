@@ -17,8 +17,10 @@ import (
 
 // Variable to indicate the IP address to connect to the server
 var (
-	addr     = flag.String("addr", "localhost:50051", "the address to connect to")
-	deleteID = flag.Int("d", 0, "ID of the todo to delete")
+	addr         = flag.String("addr", "localhost:50051", "the address to connect to")
+	deleteID     = flag.Int("d", 0, "ID of the todo to delete")
+	updateID     = flag.Int("u", 0, "ID of the todo to update")
+	updateStatus = flag.Bool("status", false, "New completion status (true/false)")
 )
 
 func main() {
@@ -40,16 +42,14 @@ func main() {
 	defer cancel()
 
 	// Check for arguments in the command-line and creates a new Todo using the CreateTodo method
-	if len(flag.Args()) > 0 {
+	if len(flag.Args()) >= 2 {
 		idInt, _ := strconv.Atoi(flag.Args()[0])
 		id := int32(idInt)
 		title := flag.Args()[1]
 		completed := false
 
-		if len(flag.Args()) > 1 {
-			if flag.Args()[2] == "true" {
-				completed = true
-			}
+		if len(flag.Args()) >= 3 && flag.Args()[2] == "true" {
+			completed = true
 		}
 		r, err := c.CreateTodo(ctx, &pb.Todo{Id: id, Title: title, Completed: completed})
 		if err != nil {
@@ -95,6 +95,24 @@ func main() {
 			log.Printf("Todo deletion was unsuccessfully")
 		}
 
+	}
+
+	if *updateID != 0 {
+		updateCtx, updateCancel := context.WithTimeout(context.Background(), time.Second)
+		defer updateCancel()
+
+		updateResp, updateErr := c.UpdateTodo(updateCtx, &pb.UpdateTodoRequest{
+			Id:        int32(*updateID),
+			Completed: *updateStatus})
+		if updateErr != nil {
+			log.Fatalf("Error updating todo: %v", updateErr)
+		}
+
+		if updateResp.Success {
+			log.Printf("Todo updated successfully")
+		} else {
+			log.Printf("Todo update was unsuccessfully")
+		}
 	}
 
 }
