@@ -17,7 +17,8 @@ import (
 
 // Variable to indicate the IP address to connect to the server
 var (
-	addr = flag.String("addr", "localhost:50051", "the address to connect to")
+	addr     = flag.String("addr", "localhost:50051", "the address to connect to")
+	deleteID = flag.Int("d", 0, "ID of the todo to delete")
 )
 
 func main() {
@@ -78,4 +79,22 @@ func main() {
 		// Print the received Todo item
 		fmt.Printf("Received todo: %v\n", todo)
 	}
+
+	if *deleteID != 0 {
+		deleteCtx, deleteCancel := context.WithTimeout(context.Background(), time.Second)
+		defer deleteCancel()
+
+		deleteResp, deleteErr := c.DeleteTodo(deleteCtx, &pb.DeleteTodoRequest{Id: int32(*deleteID)})
+		if deleteErr != nil {
+			log.Fatalf("Error deleting todo: %v", deleteErr)
+		}
+
+		if deleteResp.Success {
+			log.Printf("Todo deleted successfully")
+		} else {
+			log.Printf("Todo deletion was unsuccessfully")
+		}
+
+	}
+
 }

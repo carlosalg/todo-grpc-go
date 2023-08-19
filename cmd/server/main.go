@@ -36,6 +36,16 @@ func (s *todoServer) GetTodoList(empty *empty.Empty, stream pb.TodoService_GetTo
 	return nil
 }
 
+func (s *todoServer) DeleteTodo(ctx context.Context, req *pb.DeleteTodoRequest) (*pb.DeleteTodoResponse, error) {
+	for i, todo := range s.todos {
+		if todo.Id == req.Id {
+			s.todos = append(s.todos[:i], s.todos[i+1:]...)
+			return &pb.DeleteTodoResponse{Success: true}, nil
+		}
+	}
+	return &pb.DeleteTodoResponse{Success: false}, nil
+}
+
 func main() {
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
