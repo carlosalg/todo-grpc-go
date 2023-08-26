@@ -53,16 +53,35 @@ func TestGetTodoByID(t *testing.T) {
 	})
 }
 
+func TestUpdateTodo(t *testing.T) {
+	t.Run("TestUpdate", func(t *testing.T) {
+		repo, err := todorepo.NewTodoRepository()
+		assert.NoError(t, err)
+
+		err = repo.CreateTodo(todorepo.Todo{ID: 3, Title: "Test UpdateTodo", Completed: false})
+		assert.NoError(t, err)
+
+		todoToUpdate := repo.UpdateTodo(3, true)
+		assert.NoError(t, todoToUpdate)
+
+		actualTodo, err := repo.GetTodoByID(3)
+		assert.NoError(t, err)
+
+		expectedUpdate := todorepo.Todo{ID: 3, Title: "Test UpdateTodo", Completed: true}
+		assert.Equal(t, expectedUpdate, actualTodo)
+	})
+}
+
 func TestDeleteTodo(t *testing.T) {
 	t.Run("TestDelete", func(t *testing.T) {
 		repo, err := todorepo.NewTodoRepository()
 		assert.NoError(t, err)
 
-		todoToDelete := todorepo.Todo{ID: 3, Title: "Test DeleteTodo", Completed: false}
+		todoToDelete := todorepo.Todo{ID: 4, Title: "Test DeleteTodo", Completed: false}
 		err = repo.CreateTodo(todoToDelete)
 		assert.NoError(t, err)
 
-		err = repo.DeleteTodo(3)
+		err = repo.DeleteTodo(4)
 		assert.NoError(t, err)
 	})
 }

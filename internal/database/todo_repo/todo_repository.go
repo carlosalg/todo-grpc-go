@@ -49,6 +49,15 @@ func (r *TodoRepository) GetTodoByID(id int32) (Todo, error) {
 	return todo, nil
 }
 
+func (r *TodoRepository) UpdateTodo(id int32, completed bool) error {
+	query := "UPDATE todos SET completed = ? WHERE id = ?"
+	_, err := r.db.Exec(query, completed, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *TodoRepository) DeleteTodo(id int32) error {
 	query := "DELETE FROM todos WHERE id = ?"
 	result, err := r.db.Exec(query, id)
