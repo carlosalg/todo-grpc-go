@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/carlosalg/todo-grpc-go/internal/database/db"
-	"github.com/carlosalg/todo-grpc-go/internal/database/todo_repo"
+	todorepo "github.com/carlosalg/todo-grpc-go/internal/database/todo_repo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,7 +28,7 @@ func TestCreateTodo(t *testing.T) {
 			Title:     "Test CreateTodo",
 			Completed: false,
 		}
-		err = repo.CreateTodo(todo)
+		_, err = repo.CreateTodo(todo)
 		assert.NoError(t, err)
 
 		createdTodo, err := repo.GetTodoByID(1)
@@ -42,7 +42,7 @@ func TestGetTodoByID(t *testing.T) {
 		repo, err := todorepo.NewTodoRepository()
 		assert.NoError(t, err)
 
-		err = repo.CreateTodo(todorepo.Todo{ID: 2, Title: "Test GetTodo", Completed: false})
+		_, err = repo.CreateTodo(todorepo.Todo{ID: 2, Title: "Test GetTodo", Completed: false})
 		assert.NoError(t, err)
 
 		todo, err := repo.GetTodoByID(2)
@@ -58,7 +58,7 @@ func TestUpdateTodo(t *testing.T) {
 		repo, err := todorepo.NewTodoRepository()
 		assert.NoError(t, err)
 
-		err = repo.CreateTodo(todorepo.Todo{ID: 3, Title: "Test UpdateTodo", Completed: false})
+		_, err = repo.CreateTodo(todorepo.Todo{ID: 3, Title: "Test UpdateTodo", Completed: false})
 		assert.NoError(t, err)
 
 		todoToUpdate := repo.UpdateTodo(3, true)
@@ -78,7 +78,7 @@ func TestDeleteTodo(t *testing.T) {
 		assert.NoError(t, err)
 
 		todoToDelete := todorepo.Todo{ID: 4, Title: "Test DeleteTodo", Completed: false}
-		err = repo.CreateTodo(todoToDelete)
+		_, err = repo.CreateTodo(todoToDelete)
 		assert.NoError(t, err)
 
 		err = repo.DeleteTodo(4)

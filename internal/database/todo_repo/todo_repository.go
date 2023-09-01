@@ -26,13 +26,23 @@ func NewTodoRepository() (*TodoRepository, error) {
 
 }
 
-func (r *TodoRepository) CreateTodo(todo Todo) error {
+func (r *TodoRepository) CreateTodo(todo Todo) (Todo, error) {
 	query := "INSERT INTO todos (title, completed) VALUES (?, ?)"
-	_, err := r.db.Exec(query, todo.Title, todo.Completed)
+	result, err := r.db.Exec(query, todo.Title, todo.Completed)
 	if err != nil {
-		return err
+		return Todo{}, err
 	}
-	return nil
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return Todo{}, err
+	}
+
+	insertedTodo, err := r.GetTodoByID(int32(id))
+	if err != nil {
+		return Todo{}, err
+	}
+	return insertedTodo, nil
 }
 
 func (r *TodoRepository) GetTodoByID(id int32) (Todo, error) {
@@ -47,6 +57,29 @@ func (r *TodoRepository) GetTodoByID(id int32) (Todo, error) {
 		return todo, fmt.Errorf("GetTodoByID %d: %v", id, err)
 	}
 	return todo, nil
+}
+func (r *TodoRepository) GetAllTodos() ([]Todo, error) {
+	query := "SELECT id, title, completed FROM todos"
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var todos []Todo
+	for rows.Next() {
+		var todo Todo
+		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Completed); err != nil {
+			return nil, err
+		}
+		todos = append(todos, todo)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return todos, nil
 }
 
 func (r *TodoRepository) UpdateTodo(id int32, completed bool) error {
