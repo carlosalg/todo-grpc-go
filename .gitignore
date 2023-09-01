@@ -1,2 +1,2 @@
-cmd/client/*
-!cmd/client/*.go
+/cmd/client/main
+!/cmd/client/main.go
